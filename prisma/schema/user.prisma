@@ -1,0 +1,17 @@
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(CUSTOMER)
+  isVerified   Boolean       @default(false)
+  photoUrl     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  cartItems    CartItem[]
+  orders       Order[]
+  reservations Reservation[]
+  reviews      Review[]
+  otps         Otp[]
+}

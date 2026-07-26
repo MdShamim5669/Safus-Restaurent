@@ -1,0 +1,9 @@
+model CartItem {
+  id       String @id @default(uuid())
+  userId   String
+  menuId   String
+  quantity Int    @default(1)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+}

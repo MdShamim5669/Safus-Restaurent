@@ -1,0 +1,11 @@
+model Payment {
+  id        String         @id @default(uuid())
+  orderId   String         @unique
+  gateway   PaymentGateway
+  status    PaymentStatus  @default(PENDING)
+  amount    Float
+  txnId     String?
+  createdAt DateTime       @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}

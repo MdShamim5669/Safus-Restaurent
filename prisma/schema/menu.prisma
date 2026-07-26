@@ -1,0 +1,13 @@
+model Menu {
+  id         String   @id @default(uuid())
+  name       String
+  recipe     String
+  category   String
+  price      Float
+  imageUrl   String
+  videoUrl   String?
+  createdAt  DateTime @default(now())
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
