@@ -17,6 +17,11 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
 export const verifyOtp = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.verifyOtp(req.body);
 
+  res.cookie('accessToken', result.accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  });
+
   res.cookie('refreshToken', result.refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -27,7 +32,6 @@ export const verifyOtp = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: 'OTP verified successfully!',
     data: {
-      accessToken: result.accessToken,
       user: result.user,
     },
   });
@@ -35,6 +39,11 @@ export const verifyOtp = catchAsync(async (req: Request, res: Response) => {
 
 export const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.loginUser(req.body);
+
+  res.cookie('accessToken', result.accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  });
 
   res.cookie('refreshToken', result.refreshToken, {
     httpOnly: true,
@@ -46,7 +55,6 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: 'User logged in successfully!',
     data: {
-      accessToken: result.accessToken,
       user: result.user,
     },
   });
@@ -56,11 +64,15 @@ export const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const token = req.cookies?.refreshToken || req.body?.refreshToken;
   const result = await AuthService.refreshToken(token);
 
+  res.cookie('accessToken', result.accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  });
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: 'Access token refreshed successfully!',
-    data: result,
   });
 });
 

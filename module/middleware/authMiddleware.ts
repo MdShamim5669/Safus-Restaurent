@@ -5,7 +5,8 @@ import { verifyToken } from '../utils/jwtHelpers';
 
 export const authMiddleware = (...requiredRoles: string[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token =
+      req.headers.authorization?.split(' ')[1] || req.cookies?.accessToken;
 
     if (!token) {
       return res.status(401).json({ success: false, message: 'Unauthorized access' });
