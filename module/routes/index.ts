@@ -9,9 +9,12 @@ import { reservationRoutes } from '../reservation/reservation.route';
 import { reviewRoutes } from '../review/review.route';
 import { userRoutes } from '../user/user.route';
 
+import { IModuleRoute } from '../../interfaces';
+
 const router = Router();
 
-const moduleRoutes = [
+// Centralized module routing tree under /api/v1
+const moduleRoutes: IModuleRoute[] = [
   { path: '/auth', route: authRoutes },
   { path: '/users', route: userRoutes },
   { path: '/menu', route: menuRoutes },
