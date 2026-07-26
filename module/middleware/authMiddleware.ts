@@ -7,6 +7,7 @@ export const authMiddleware = (...requiredRoles: string[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     let token =
       req.headers.authorization ||
+      (req.headers.accesstoken as string) ||
       (req.headers['x-access-token'] as string) ||
       req.cookies?.accessToken;
 
@@ -14,9 +15,17 @@ export const authMiddleware = (...requiredRoles: string[]) => {
       throw new AppError(401, 'Unauthorized access: No token provided in headers or cookies');
     }
 
-    // Strip 'Bearer ' prefix if present
-    if (typeof token === 'string' && token.startsWith('Bearer ')) {
-      token = token.slice(7).trim();
+    if (typeof token === 'string') {
+      // Strip 'Bearer ' prefix if present
+      if (token.startsWith('Bearer ')) {
+        token = token.slice(7).trim();
+      }
+      // Clean leading and trailing quotation marks if present
+      token = token.replace(/^["']|["']$/g, '').trim();
+    }
+
+    if (!token || token === 'Bearer') {
+      throw new AppError(401, 'Unauthorized access: Empty token provided');
     }
 
     try {
