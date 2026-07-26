@@ -16,15 +16,13 @@ export const authMiddleware = (...requiredRoles: string[]) => {
     }
 
     if (typeof token === 'string') {
-      // Strip 'Bearer ' prefix if present
-      if (token.startsWith('Bearer ')) {
-        token = token.slice(7).trim();
-      }
+      // Strip 'Bearer ' / 'Bearar ' prefix case-insensitively
+      token = token.replace(/^(bearer|bearar)\s+/i, '').trim();
       // Clean leading and trailing quotation marks if present
       token = token.replace(/^["']|["']$/g, '').trim();
     }
 
-    if (!token || token === 'Bearer') {
+    if (!token) {
       throw new AppError(401, 'Unauthorized access: Empty token provided');
     }
 
