@@ -1,2 +1,20 @@
 import { Router } from 'express';
-export const paymentRoutes = Router().get('/health', (req, res) => res.json({ message: 'Payment module active' }));
+import { authMiddleware } from '../middleware/authMiddleware';
+import { validateRequest } from '../middleware/validateRequest';
+import { PaymentController } from './payment.controller';
+import { PaymentValidation } from './payment.validation';
+
+const router = Router();
+
+router.post(
+  '/intent',
+  authMiddleware(),
+  validateRequest(PaymentValidation.createPaymentIntentSchema),
+  PaymentController.createPaymentIntent
+);
+
+router.post('/webhook/stripe', PaymentController.stripeWebhook);
+router.post('/sslcommerz/success', PaymentController.sslCommerzSuccess);
+router.post('/sslcommerz/fail', PaymentController.sslCommerzFail);
+
+export const paymentRoutes = router;
