@@ -51,7 +51,8 @@ export const getMyCart = async (userId: string) => {
   });
 
   const totalAmount = cartItems.reduce(
-    (sum, item) => sum + item.menu.price * item.quantity,
+    (sum: number, item: { menu: { price: number }; quantity: number }) =>
+      sum + item.menu.price * item.quantity,
     0
   );
 

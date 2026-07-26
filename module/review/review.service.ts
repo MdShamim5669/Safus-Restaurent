@@ -34,7 +34,7 @@ export const getAllReviews = async () => {
   const totalReviews = reviews.length;
   const averageRating =
     totalReviews > 0
-      ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1))
+      ? Number((reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / totalReviews).toFixed(1))
       : 0;
 
   return {
