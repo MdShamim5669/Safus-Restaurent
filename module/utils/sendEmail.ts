@@ -1,11 +1,5 @@
 import { resend } from '../../config/resend';
-
-export interface ISendEmailOptions {
-  to: string;
-  subject: string;
-  html: string;
-  from?: string;
-}
+import { ISendEmailOptions } from '../../interfaces';
 
 export const sendEmail = async ({
   to,
