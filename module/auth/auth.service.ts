@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import prisma from '../../config/db';
 import env from '../../config/env';
+import { AppError } from '../utils/AppError';
 import { generateOtp } from '../utils/generateOtp';
 import { createToken, verifyToken } from '../utils/jwtHelpers';
 import { sendEmail } from '../utils/sendEmail';
@@ -13,7 +14,7 @@ export const registerUser = async (payload: { name: string; email: string; passw
   });
 
   if (existingUser) {
-    throw new Error('User already exists with this email');
+    throw new AppError(400, 'User already exists with this email');
   }
 
   const hashedPassword = await bcrypt.hash(payload.password, SALT_ROUNDS);
@@ -66,7 +67,7 @@ export const verifyOtp = async (payload: { email: string; code: string }) => {
   });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new AppError(404, 'User not found');
   }
 
   const validOtp = await prisma.otp.findFirst({
@@ -78,7 +79,7 @@ export const verifyOtp = async (payload: { email: string; code: string }) => {
   });
 
   if (!validOtp) {
-    throw new Error('Invalid or expired OTP code');
+    throw new AppError(400, 'Invalid or expired OTP code');
   }
 
   // Update user as verified and cleanup OTPs for this user
@@ -117,16 +118,16 @@ export const loginUser = async (payload: { email: string; password: string }) =>
   });
 
   if (!user) {
-    throw new Error('Invalid email or password');
+    throw new AppError(401, 'Invalid email or password');
   }
 
   const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
   if (!isPasswordMatch) {
-    throw new Error('Invalid email or password');
+    throw new AppError(401, 'Invalid email or password');
   }
 
   if (!user.isVerified) {
-    throw new Error('Account is not verified yet. Please verify your OTP.');
+    throw new AppError(403, 'Account is not verified yet. Please verify your OTP.');
   }
 
   const jwtPayload = { id: user.id, email: user.email, role: user.role };
@@ -150,7 +151,7 @@ export const loginUser = async (payload: { email: string; password: string }) =>
 
 export const refreshToken = async (token: string) => {
   if (!token) {
-    throw new Error('Refresh token is required');
+    throw new AppError(401, 'Refresh token is required');
   }
 
   const decoded = verifyToken(token, env.JWT_REFRESH_SECRET) as any;
@@ -160,7 +161,7 @@ export const refreshToken = async (token: string) => {
   });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new AppError(404, 'User not found');
   }
 
   const jwtPayload = { id: user.id, email: user.email, role: user.role };
@@ -177,7 +178,7 @@ export const forgotPassword = async (payload: { email: string }) => {
   });
 
   if (!user) {
-    throw new Error('User not found with this email');
+    throw new AppError(404, 'User not found with this email');
   }
 
   const otpCode = generateOtp();
@@ -219,7 +220,7 @@ export const resetPassword = async (payload: {
   });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new AppError(404, 'User not found');
   }
 
   const validOtp = await prisma.otp.findFirst({
@@ -231,7 +232,7 @@ export const resetPassword = async (payload: {
   });
 
   if (!validOtp) {
-    throw new Error('Invalid or expired OTP code');
+    throw new AppError(400, 'Invalid or expired OTP code');
   }
 
   const hashedPassword = await bcrypt.hash(payload.newPassword, SALT_ROUNDS);

@@ -1,4 +1,5 @@
 import prisma from '../../config/db';
+import { AppError } from '../utils/AppError';
 import { Role } from '../shared';
 
 export const getMyProfile = async (userId: string) => {
@@ -17,7 +18,7 @@ export const getMyProfile = async (userId: string) => {
   });
 
   if (!user) {
-    throw new Error('User profile not found');
+    throw new AppError(404, 'User profile not found');
   }
 
   return user;

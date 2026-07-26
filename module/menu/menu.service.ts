@@ -1,4 +1,5 @@
 import prisma from '../../config/db';
+import { AppError } from '../utils/AppError';
 
 export interface IMenuFilterOptions {
   category?: string;
@@ -57,7 +58,7 @@ export const getSingleMenuItem = async (id: string) => {
   });
 
   if (!menuItem) {
-    throw new Error('Menu item not found');
+    throw new AppError(404, 'Menu item not found');
   }
 
   return menuItem;
@@ -79,7 +80,7 @@ export const updateMenuItem = async (
   });
 
   if (!existingItem) {
-    throw new Error('Menu item not found');
+    throw new AppError(404, 'Menu item not found');
   }
 
   const updatedItem = await prisma.menu.update({
@@ -96,7 +97,7 @@ export const deleteMenuItem = async (id: string) => {
   });
 
   if (!existingItem) {
-    throw new Error('Menu item not found');
+    throw new AppError(404, 'Menu item not found');
   }
 
   await prisma.menu.delete({

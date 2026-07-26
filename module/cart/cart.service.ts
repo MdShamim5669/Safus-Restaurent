@@ -1,4 +1,5 @@
 import prisma from '../../config/db';
+import { AppError } from '../utils/AppError';
 
 export const addToCart = async (
   userId: string,
@@ -9,7 +10,7 @@ export const addToCart = async (
   });
 
   if (!menuItem) {
-    throw new Error('Menu item not found');
+    throw new AppError(404, 'Menu item not found');
   }
 
   const existingCartItem = await prisma.cartItem.findFirst({
@@ -71,7 +72,7 @@ export const updateCartItemQuantity = async (
   });
 
   if (!existingItem) {
-    throw new Error('Cart item not found in your cart');
+    throw new AppError(404, 'Cart item not found in your cart');
   }
 
   if (quantity <= 0) {
@@ -96,7 +97,7 @@ export const removeCartItem = async (userId: string, cartItemId: string) => {
   });
 
   if (!existingItem) {
-    throw new Error('Cart item not found in your cart');
+    throw new AppError(404, 'Cart item not found in your cart');
   }
 
   await prisma.cartItem.delete({
